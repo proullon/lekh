@@ -12,7 +12,7 @@ type Lekh struct {
     engine            Engine
     actions           []Action
     input             chan Event
-    rules             []ruleHandler
+    laws              []lawyer
     intentionReceiver chan Intention
     proxies           []Proxy
 
@@ -54,10 +54,10 @@ func (l *Lekh) AddProxy(p Proxy) {
     p.ReceiveIntentions(l.intentionReceiver)
 }
 
-func (l *Lekh) AddRule(r Rule) {
-    log.Printf("Adding new rule %v\n", r)
-    handler := ruleHandler{CurrentDelay: r.Delay, R: r}
-    l.rules = append(l.rules, handler)
+func (l *Lekh) AddLaw(law Law) {
+    log.Printf("Adding new law %v\n", law)
+    handler := lawyer{CurrentDelay: law.Delay, L: law}
+    l.laws = append(l.laws, handler)
 }
 
 func (l *Lekh) Bind(i Intention, a Action) {
@@ -99,20 +99,19 @@ func (l *Lekh) timeUpdate() {
         }
     }
 
-    // Check rules
-    for i := range l.rules {
-        // log.Printf("Delay moving to %d\n", l.rules[i].CurrentDelay-1)
-        l.rules[i].CurrentDelay--
-        if l.rules[i].CurrentDelay == 0 {
+    // Check laws
+    for i := range l.laws {
+        l.laws[i].CurrentDelay--
+        if l.laws[i].CurrentDelay == 0 {
             // Reset Delay
-            l.rules[i].CurrentDelay = l.rules[i].R.Delay
+            l.laws[i].CurrentDelay = l.laws[i].L.Delay
             // Go Through all entities
             em := l.engine.Entities()
             entities := em.Entities()
 
             for x := range entities {
-                if l.rules[i].R.Targets == nil || reflect.TypeOf(entities[x]) == l.rules[i].R.Targets || reflect.TypeOf(entities[x]) == reflect.PtrTo(l.rules[i].R.Targets) {
-                    go l.rules[i].R.Ruler(entities[x], l.engine.Terrain(), l.engine.Entities())
+                if l.laws[i].L.Targets == nil || reflect.TypeOf(entities[x]) == l.laws[i].L.Targets || reflect.TypeOf(entities[x]) == reflect.PtrTo(l.laws[i].L.Targets) {
+                    go l.laws[i].L.Law(entities[x], l.engine.Terrain(), l.engine.Entities())
                 }
             }
         }
