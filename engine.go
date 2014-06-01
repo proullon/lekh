@@ -2,7 +2,6 @@ package lekh
 
 type Engine interface {
     HandleEvent(event Event)
-    TimeUpdate()
     Init(input chan Event, worldSizeX int, worldSizeY int)
     Entities() EntityManager
     Terrain() *World
