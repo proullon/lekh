@@ -2,6 +2,7 @@ package lekh
 
 import (
     "encoding/json"
+    "log"
 )
 
 /* A course of action that an entity intends to follow
@@ -13,11 +14,12 @@ type Intention struct {
     Payload  interface{}
 }
 
-func NewIntention(data []byte) (intent Intention) {
-    err := json.Unmarshal(data, &intent)
+func NewIntention(data []byte) (intent Intention, err error) {
+    err = json.Unmarshal(data, &intent)
 
     if err != nil {
-        panic(err)
+        log.Printf("Intention: Cannot unmarshall %s: %s\n", string(data), err)
+        return
     }
 
     return
@@ -25,9 +27,11 @@ func NewIntention(data []byte) (intent Intention) {
 
 func (intent Intention) Json() []byte {
     b, err := json.Marshal(intent)
+    log.Printf("Intent.JSON : %s\n", string(b))
 
     if err != nil {
-        panic(err)
+        log.Printf("Intention: Cannot marshall intent: %s\n", err)
+        return nil
     }
 
     return b

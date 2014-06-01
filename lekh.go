@@ -23,6 +23,7 @@ func (l *Lekh) Init(engine Engine, worldSizeX int, worldSizeY int, cycle time.Du
 
     l.stop = make(chan bool)
     l.input = make(chan Event)
+    l.intentionReceiver = make(chan Intention)
     l.cycle = cycle
 
     l.engine = engine
